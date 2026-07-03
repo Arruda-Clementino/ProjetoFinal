@@ -2,8 +2,10 @@
 /**
  * @file Bsp.h
  * @addtogroup Bsp
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 1
+ / @} DOXYGEN GROUP TAG END OF FILE */
 #ifndef BSP_H
 #define BSP_H
 

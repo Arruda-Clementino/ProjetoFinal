@@ -2,8 +2,10 @@
 /**
  * @file LedPwm.c
  * @addtogroup LedPwm
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 1
+ / @} DOXYGEN GROUP TAG END OF FILE */
 
 /*******************************************************************************
  * INCLUDES

@@ -2,8 +2,11 @@
 /**
  * @file SerialCmd.h
  * @addtogroup SerialCmd
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 1
+ / @} DOXYGEN GROUP TAG END OF FILE */
+
 #ifndef SERIAL_CMD_H
 #define SERIAL_CMD_H
 

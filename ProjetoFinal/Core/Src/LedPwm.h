@@ -2,8 +2,11 @@
 /**
  * @file LedPwm.h
  * @addtogroup LedPwm
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 1
+ / @} DOXYGEN GROUP TAG END OF FILE */
+
 #ifndef LED_PWM_H
 #define LED_PWM_H
 

@@ -2,8 +2,11 @@
 /**
  * @file Button.h
  * @addtogroup Button
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 1
+ / @} DOXYGEN GROUP TAG END OF FILE */
+
 #ifndef BUTTON_H
 #define BUTTON_H
 

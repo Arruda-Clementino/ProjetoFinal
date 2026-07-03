@@ -2,8 +2,10 @@
 /**
  * @file SerialCmd.c
  * @addtogroup SerialCmd
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 1
+ / @} DOXYGEN GROUP TAG END OF FILE */
 
 /*******************************************************************************
  * INCLUDES
@@ -26,6 +28,10 @@
 
 /// Tamanho em bytes da string de comando (4 caracteres)
 #define dCMD_LENGTH     4
+/// CMD vazio
+#define dEMPTY_INDEX 	0
+/// Deslocamento para o caractere nulo \0
+#define dNULL_TERMINATOR_OFFSET 1
 
 /*******************************************************************************
  * CONSTANTES
@@ -84,7 +90,7 @@ void SerialCmd_Process(void)
         if((receivedChar == '\r') || (receivedChar == '\n'))
         {
             // Avalia o comando contido no buffer, caso haja algo escrito
-            if(serialCmd.index > 0)
+            if(serialCmd.index > dEMPTY_INDEX)
             {
                 SerialCmd_EvaluateBuffer();
             }
@@ -92,7 +98,7 @@ void SerialCmd_Process(void)
         else
         {
             // Protege o buffer contra estouro de memoria (overflow)
-            if(serialCmd.index < (dMAX_CMD_LENGTH - 1))
+            if(serialCmd.index < (dMAX_CMD_LENGTH - dNULL_TERMINATOR_OFFSET))
             {
                 // Salva o caractere e incrementa a posicao do cursor
                 serialCmd.buffer[serialCmd.index] = (char)receivedChar;
@@ -145,7 +151,7 @@ static void SerialCmd_ClearBuffer(void)
 {
     // Limpa o conteudo com preenchimento em 0 (NULL) e zera o indice
     memset(serialCmd.buffer, 0, dMAX_CMD_LENGTH);
-    serialCmd.index = 0;
+    serialCmd.index = dEMPTY_INDEX;
 }
 
 /** @} */

@@ -2,8 +2,11 @@
 /**
  * @file Sampler.h
  * @addtogroup Sampler
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 1
+ / @} DOXYGEN GROUP TAG END OF FILE */
+
 #ifndef SAMPLER_H
 #define SAMPLER_H
 

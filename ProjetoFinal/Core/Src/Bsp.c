@@ -2,8 +2,10 @@
 /**
  * @file Bsp.c
  * @addtogroup Bsp
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 1
+ / @} DOXYGEN GROUP TAG END OF FILE */
 
 /*******************************************************************************
  * INCLUDES
@@ -19,6 +21,10 @@
 #define dADC_TIMEOUT_MS  10
 /// Timeout para envio da UART em milissegundos
 #define dUART_TIMEOUT_MS 100
+/// Porcentagem maxima
+#define dPERCENTAGE_MAX 100
+/// Quantidade de bytes para UART
+#define dUART_RX_BYTES_QTY 1
 
 /*******************************************************************************
  * CONSTANTES
@@ -78,7 +84,7 @@ void Bsp_Init(void)
     HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
 
     /* Inicia a recepcao da USART3 via Interrupcao (recebendo 1 caractere) */
-    HAL_UART_Receive_IT(&huart3, &bsp.uartRxBuffer, 1);
+    HAL_UART_Receive_IT(&huart3, &bsp.uartRxBuffer, dUART_RX_BYTES_QTY);
 }
 
 /******************************************************************************/
@@ -128,7 +134,7 @@ void Bsp_SetLedPwm(bspLed_t ledChannel, u8 dutyPercent)
     /* Pegamos o valor maximo de ARR (periodo) diretamente do handle do Timer
        para evitar numeros magicos e garantir portabilidade. */
     u32 maxArr = __HAL_TIM_GET_AUTORELOAD(&htim2);
-    u32 ccrValue = (maxArr * dutyPercent) / 100;
+    u32 ccrValue = (maxArr * dutyPercent) / dPERCENTAGE_MAX;
 
     switch(ledChannel)
     {
@@ -259,7 +265,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
         bsp.isUartDataReady = true;
 
         // Reativa a interrupcao imediatamente para receber o proximo caractere
-        HAL_UART_Receive_IT(&huart3, &bsp.uartRxBuffer, 1);
+        HAL_UART_Receive_IT(&huart3, &bsp.uartRxBuffer, dUART_RX_BYTES_QTY );
     }
 }
 /** @} */

@@ -2,8 +2,10 @@
 /**
  * @file Sampler.c
  * @addtogroup Sampler
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 1
+ / @} DOXYGEN GROUP TAG END OF FILE */
 
 /*******************************************************************************
  * INCLUDES

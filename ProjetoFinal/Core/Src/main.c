@@ -21,7 +21,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Bsp.h"
+#include "Sampler.h"
+#include "LedPwm.h"
+#include "SerialCmd.h"
+#include "Button.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,7 +49,11 @@
 TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN PV */
+/// Quantidade de ciclos de 5ms necessários para completar 1 segundo (200 * 5ms = 1000ms)
+#define dTICKS_PER_SECOND   200
 
+/// Tamanho máximo seguro para o buffer de transmissão de texto da UART
+#define dTX_BUFFER_SIZE     128
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,7 +102,17 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
+  // Inicializa a camada de abstração de hardware e interrupções
+  Bsp_Init();
 
+  // Inicializa os módulos de software do backend
+  Sampler_Init();
+  LedPwm_Init();
+  SerialCmd_Init();
+  Button_Init();
+
+  // Contador local para gerenciar o intervalo de 1 segundo da telemetria
+  u8 tickCounter = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -101,7 +120,65 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  /* USER CODE BEGIN 3 */
+	  // Processa de forma contínua as entradas de interface (Não bloqueantes)
+	  Button_Process();
+	  SerialCmd_Process();
 
+	  // 3.1. Verificação do gatilho do temporizador de amostragem (A cada 5 ms)
+	  if (Bsp_GetSamplingFlag() == true)
+	  {
+		  Bsp_ClearSamplingFlag();
+
+		  // Incrementa a contagem de tempo para a telemetria de 1 segundo
+		  tickCounter++;
+
+		  // REQUISITO 3.5: Se o botão congelou a operação, pula a leitura e atuação
+		  if (Button_IsSystemFrozen() == false)
+		  {
+			  // Executa a leitura do ADC por Polling no laço principal
+			  u16 rawAdc = Bsp_ReadAdc();
+
+			  // Envia a amostra bruta para ser acumulada no filtro de média
+			  Sampler_ProcessNewSample(rawAdc);
+		  }
+
+		  // 3.2. Verifica se a janela de filtragem (100 amostras / 500 ms) foi concluída
+		  if (Sampler_IsNewAverageReady() == true)
+		  {
+			  Sampler_ClearAverageFlag();
+
+			  // Recupera a média convertida para 0 a 100%
+			  u8 currentVolume = Sampler_GetFilteredPercentage();
+
+			  // Aplica a nova intensidade apenas ao LED selecionado no momento
+			  LedPwm_UpdateActiveLedIntensity(currentVolume);
+		  }
+
+		  // Verifica se transcorreu o intervalo de 1 segundo (200 ciclos de 5ms)
+		  if (tickCounter >= dTICKS_PER_SECOND)
+		  {
+			  tickCounter = 0; // Reinicia o temporizador local da telemetria
+
+			  char txBuffer[dTX_BUFFER_SIZE];
+
+			  // Determina a string de estado de congelamento exigida pela especificação
+			  const char *stateStr = (Button_IsSystemFrozen() == true) ? "OFF" : "ON";
+
+			  // Formata a string de saída seguindo rigorosamente o padrão exato exigido
+			  snprintf(txBuffer, dTX_BUFFER_SIZE,
+					   "VALUE: %u%% || LED1: %u%% aceso || LED2: %u%% aceso || LED3: %u%% aceso || STATE: %s\r\n",
+					   Sampler_GetFilteredPercentage(),
+					   LedPwm_GetLedDuty(eBSP_LED_1),
+					   LedPwm_GetLedDuty(eBSP_LED_2),
+					   LedPwm_GetLedDuty(eBSP_LED_3),
+					   stateStr);
+
+			  // Transmite os dados formatados via USART3 por Polling rápido
+			  Bsp_TransmitUartString(txBuffer);
+		  }
+	  }
+	}
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

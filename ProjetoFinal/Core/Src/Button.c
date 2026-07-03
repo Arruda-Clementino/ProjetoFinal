@@ -2,8 +2,10 @@
 /**
  * @file Button.c
  * @addtogroup Button
- * @{
- ******************************************************************************/
+ * @author Luis Eduardo
+ * @details
+ * @version 2
+ / @} DOXYGEN GROUP TAG END OF FILE */
 
 /*******************************************************************************
  * INCLUDES
