@@ -56,5 +56,8 @@ void Bsp_ClearUartRxFlag(void);
 u8 Bsp_GetUartRxData(void);
 void Bsp_TransmitUartString(const char *str);
 
+
+void Bsp_LedInternal_Write(bspLed_t ledChannel, bool state);
+void Bsp_PwmSoftware_Process(void);
 #endif /* BSP_H */
 /** @} */
